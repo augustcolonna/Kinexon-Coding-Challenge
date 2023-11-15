@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+
+///Users/augustcolonna/Downloads/protoc-3.15.8-osx-x86_64/bin/protoc --js_out=import_style=commonjs,binary:. proto/messages.proto
+
+
+message Data3d {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+    }
+    message Position {
+    uint64 sensorId = 1;
+    uint64 timestamp_usec = 2;
+    Data3d position = 3;
+    }
