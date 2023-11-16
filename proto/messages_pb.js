@@ -283,7 +283,7 @@ proto.Position.toObject = function(includeInstance, msg) {
   var f, obj = {
     sensorid: jspb.Message.getFieldWithDefault(msg, 1, 0),
     timestampUsec: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    position: (f = msg.getPosition()) && proto.Data3d.toObject(includeInstance, f)
+    data3d: (f = msg.getData3d()) && proto.Data3d.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -331,7 +331,7 @@ proto.Position.deserializeBinaryFromReader = function(msg, reader) {
     case 3:
       var value = new proto.Data3d;
       reader.readMessage(value,proto.Data3d.deserializeBinaryFromReader);
-      msg.setPosition(value);
+      msg.setData3d(value);
       break;
     default:
       reader.skipField();
@@ -376,7 +376,7 @@ proto.Position.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getPosition();
+  f = message.getData3d();
   if (f != null) {
     writer.writeMessage(
       3,
@@ -424,10 +424,10 @@ proto.Position.prototype.setTimestampUsec = function(value) {
 
 
 /**
- * optional Data3d position = 3;
+ * optional Data3d data3d = 3;
  * @return {?proto.Data3d}
  */
-proto.Position.prototype.getPosition = function() {
+proto.Position.prototype.getData3d = function() {
   return /** @type{?proto.Data3d} */ (
     jspb.Message.getWrapperField(this, proto.Data3d, 3));
 };
@@ -437,7 +437,7 @@ proto.Position.prototype.getPosition = function() {
  * @param {?proto.Data3d|undefined} value
  * @return {!proto.Position} returns this
 */
-proto.Position.prototype.setPosition = function(value) {
+proto.Position.prototype.setData3d = function(value) {
   return jspb.Message.setWrapperField(this, 3, value);
 };
 
@@ -446,8 +446,8 @@ proto.Position.prototype.setPosition = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.Position} returns this
  */
-proto.Position.prototype.clearPosition = function() {
-  return this.setPosition(undefined);
+proto.Position.prototype.clearData3d = function() {
+  return this.setData3d(undefined);
 };
 
 
@@ -455,7 +455,7 @@ proto.Position.prototype.clearPosition = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Position.prototype.hasPosition = function() {
+proto.Position.prototype.hasData3d = function() {
   return jspb.Message.getField(this, 3) != null;
 };
 
