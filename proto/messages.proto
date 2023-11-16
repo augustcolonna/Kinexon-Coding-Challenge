@@ -1,6 +1,6 @@
 
 syntax = "proto3";
-
+package player.positions;
 ///Users/augustcolonna/Downloads/protoc-3.15.8-osx-x86_64/bin/protoc --js_out=import_style=commonjs,binary:. proto/messages.proto
 
 message Data3d {

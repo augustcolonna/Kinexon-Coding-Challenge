@@ -1,17 +1,10 @@
-// const zmq = require("zeromq");
-// const subscriber = zmq.socket("sub");
-
-// subscriber.connect("tcp://127.0.0.1:3000");
-// subscriber.subscribe("");
-
-// subscriber.on("message", (message) => {
-//   console.log(`Received message: ${message.toString()}`);
-// });
-
 // Import necessary libraries
 const zmq = require("zeromq");
-const messages = require("../proto/messages_pb");
+// const messages = require("../proto/messages_pb");
+const protobuf = require("protobufjs");
+const root = protobuf.loadSync("proto/messages.proto");
 
+const Position = root.lookupType("player.positions.Position");
 // Create a ZeroMQ subscriber socket
 const subscriber = zmq.socket("sub");
 
@@ -27,27 +20,16 @@ subscriber.subscribe("");
 // Handle incoming messages
 subscriber.on("message", (topic, message) => {
   try {
-    const positionMessage = messages.Position.deserializeBinary(message);
+    const positionMessage = Position.decode(message);
     console.log(positionMessage);
+
     console.log("<------------NEW POSITION MESSAGE------------>");
     console.log("Received Position Message:");
-    console.log(`Sensor ID: ${positionMessage.getSensorid()}`);
-    console.log(`Timestamp (usec): ${positionMessage.getTimestampUsec()}`);
-    console.log(`Position Data: ${positionMessage.getData3d()}`);
-    // Process the received position message
-
-    // console.log("Received Position Message:");
-    // console.log(`Sensor ID: ${positionMessage.array.sensorId}`);
-    // console.log(`Timestamp (usec): ${positionMessage.array.timestamp_usec}`);
-
-    // const data3d = positionMessage.array.data3d;
-    // if (data3d) {
-    //   console.log(
-    //     `Position Data: ${data3d.array.x}, ${data3d.array.y}, ${data3d.array.z}`
-    //   );
-    // } else {
-    //   console.log(`Position Data is undefined`);
-    // }
+    console.log(`Sensor ID: ${positionMessage.sensorId}`);
+    console.log(`Timestamp (usec): ${positionMessage.timestamp_usec}`);
+    console.log(
+      `Position Data: X | ${positionMessage.data3d.x}, Y | ${positionMessage.data3d.y}, Z | ${positionMessage.data3d.z}`
+    );
   } catch (error) {
     console.error("Error deserializing message:", error);
   }

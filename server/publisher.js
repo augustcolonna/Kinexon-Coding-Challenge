@@ -1,16 +1,10 @@
-// const zmq = require("zeromq");
-// const publisher = zmq.socket("pub");
-// publisher.bindSync("tcp://127.0.0.1:3000");
-
-// setInterval(() => {
-//   console.log("Sending message");
-//   publisher.send("Hello, World!");
-// }, 1000);
-
 // Import necessary libraries
 const zmq = require("zeromq");
-const messages = require("../proto/messages_pb");
-const protobuf = require("google-protobuf");
+
+const protobuf = require("protobufjs");
+const root = protobuf.loadSync("proto/messages.proto");
+const Data3d = root.lookupType("player.positions.Data3d");
+const Position = root.lookupType("player.positions.Position");
 
 // Create a ZeroMQ publisher socket
 const publisher = zmq.socket("pub");
@@ -22,41 +16,41 @@ console.log(`Publisher bound to ${port}`);
 
 // Function to generate a random position
 function generateRandomPosition() {
-  return new messages.Data3d({
+  return Data3d.create({
     x: Math.random() * 100,
     y: Math.random() * 100,
     z: Math.random() * 3,
   });
 }
 
-// // Function to add noise to the position
-// function addNoise(coordinates) {
-//   return new messages.Data3d({
-//     x: coordinates.x + (Math.random() - 0.5) * 0.3,
-//     y: coordinates.y + (Math.random() - 0.5) * 0.3,
-//     z: coordinates.z + (Math.random() - 0.5) * 0.3,
-//   });
-// }
+// Function to add noise to the position
+function addNoise(coordinates) {
+  return Data3d.create({
+    x: coordinates.x + (Math.random() - 0.5) * 0.3,
+    y: coordinates.y + (Math.random() - 0.5) * 0.3,
+    z: coordinates.z + (Math.random() - 0.5) * 0.3,
+  });
+}
 
 // Function to publish updates
 function publishUpdates() {
   setInterval(() => {
     for (let i = 1; i <= 10; i++) {
-      const timestamp_usec = Date.now() * 1000;
-      // console.log(timestamp_usec);
+      const timestamp = new Date();
+      const timestamp_usec = Math.floor(timestamp / 1000000);
       const position = generateRandomPosition();
-      // console.log(position.array);
-      // const positionWithNoise = addNoise(position);
-      // console.log(positionWithNoise.array);
-      const message = new messages.Position({
+
+      const positionWithNoise = addNoise(position);
+
+      const message = Position.create({
         sensorId: i,
         timestamp_usec: timestamp_usec,
-        data3d: position,
+        data3d: positionWithNoise,
       });
 
-      const serializedMessage = message.serializeBinary();
+      const encodeMessage = Position.encode(message).finish();
 
-      publisher.send(["", serializedMessage]);
+      publisher.send(["", encodeMessage]);
     }
   }, 1000);
 }
