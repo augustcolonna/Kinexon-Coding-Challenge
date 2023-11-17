@@ -32,6 +32,10 @@ function addNoise(coordinates) {
   });
 }
 
+// function checkForCollissions(position) {
+//   for (let i = 0; i <= 10; i++) {}
+// }
+
 // Function to publish updates
 function publishUpdates() {
   setInterval(() => {
@@ -47,6 +51,8 @@ function publishUpdates() {
         timestamp_usec: timestamp_usec,
         data3d: positionWithNoise,
       });
+
+      console.log(message);
 
       const encodeMessage = Position.encode(message).finish();
 
