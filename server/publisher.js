@@ -32,33 +32,32 @@ function addNoise(coordinates) {
   });
 }
 
-// function checkForCollissions(position) {
-//   for (let i = 0; i <= 10; i++) {}
-// }
-
 // Function to publish updates
 function publishUpdates() {
   setInterval(() => {
     for (let i = 1; i <= 10; i++) {
       const timestamp = new Date();
-      const timestamp_usec = Math.floor(timestamp / 1000000);
+      const timestamp_usec = timestamp.getTime() * 1000;
       const position = generateRandomPosition();
 
       const positionWithNoise = addNoise(position);
 
-      const message = Position.create({
+      const positionData = {
         sensorId: i,
         timestamp_usec: timestamp_usec,
         data3d: positionWithNoise,
-      });
+      };
 
-      console.log(message);
+      const message = Position.create(positionData);
 
       const encodeMessage = Position.encode(message).finish();
+      console.log("message after sending: ", encodeMessage);
 
       publisher.send(["", encodeMessage]);
+
+      console.log("Published message:");
     }
-  }, 1000);
+  }, 5000);
 }
 
 publishUpdates();
