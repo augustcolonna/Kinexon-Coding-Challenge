@@ -10,7 +10,7 @@ message Data3d {
     }
 
     message Position {
-    uint64 sensorId = 1;
-    uint64 timestamp_usec = 2;
+    string sensorId = 1;
+    string timestampUsec = 2;
     Data3d data3d = 3;
     }

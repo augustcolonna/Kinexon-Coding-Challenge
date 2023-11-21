@@ -1,13 +1,13 @@
 // Import necessary libraries
-const zmq = require("zeromq");
-
-const protobuf = require("protobufjs");
-const root = protobuf.loadSync("proto/messages.proto");
+import { socket } from "zeromq";
+import pkg from "protobufjs";
+const { loadSync } = pkg;
+const root = loadSync("proto/messages.proto");
 const Data3d = root.lookupType("player.positions.Data3d");
 const Position = root.lookupType("player.positions.Position");
 
 // Create a ZeroMQ publisher socket
-const publisher = zmq.socket("pub");
+const publisher = socket("pub");
 
 // Bind the socket to a port
 const port = "tcp://127.0.0.1:3001";
@@ -17,18 +17,18 @@ console.log(`Publisher bound to ${port}`);
 // Function to generate a random position
 function generateRandomPosition() {
   return Data3d.create({
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    z: Math.random() * 3,
+    x: Math.abs(Math.floor(Math.random() * 101)),
+    y: Math.abs(Math.floor(Math.random() * 101)),
+    z: Math.abs(Math.floor(Math.random() * 3)),
   });
 }
 
 // Function to add noise to the position
 function addNoise(coordinates) {
   return Data3d.create({
-    x: coordinates.x + (Math.random() - 0.5) * 0.3,
-    y: coordinates.y + (Math.random() - 0.5) * 0.3,
-    z: coordinates.z + (Math.random() - 0.5) * 0.3,
+    x: coordinates.x + Math.abs(Math.floor(Math.random() - 0.5) * 0.3),
+    y: coordinates.y + Math.abs(Math.floor(Math.random() - 0.5) * 0.3),
+    z: coordinates.z + Math.abs(Math.floor(Math.random() - 0.5) * 0.3),
   });
 }
 
@@ -38,26 +38,26 @@ function publishUpdates() {
     for (let i = 1; i <= 10; i++) {
       const timestamp = new Date();
       const timestamp_usec = timestamp.getTime() * 1000;
-      const position = generateRandomPosition();
 
+      console.log(timestamp_usec);
+
+      const position = generateRandomPosition();
       const positionWithNoise = addNoise(position);
 
       const positionData = {
-        sensorId: i,
-        timestamp_usec: timestamp_usec,
+        sensorId: i.toString(),
+        timestampUsec: timestamp_usec.toString(),
         data3d: positionWithNoise,
       };
-
+      console.log(positionData);
       const message = Position.create(positionData);
 
       const encodeMessage = Position.encode(message).finish();
-      console.log("message after sending: ", encodeMessage);
-
       publisher.send(["", encodeMessage]);
 
       console.log("Published message:");
     }
-  }, 5000);
+  }, 15000);
 }
 
 publishUpdates();
