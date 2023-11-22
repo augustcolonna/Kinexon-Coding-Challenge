@@ -1,6 +1,8 @@
 // Import necessary libraries
 import { socket } from "zeromq";
 import pkg from "protobufjs";
+
+//protobuf import
 const { loadSync } = pkg;
 const root = loadSync("proto/messages.proto");
 const Data3d = root.lookupType("player.positions.Data3d");
@@ -26,9 +28,9 @@ function generateRandomPosition() {
 // Function to add noise to the position
 function addNoise(coordinates) {
   return Data3d.create({
-    x: coordinates.x + Math.abs(Math.floor(Math.random() - 0.5) * 0.3),
-    y: coordinates.y + Math.abs(Math.floor(Math.random() - 0.5) * 0.3),
-    z: coordinates.z + Math.abs(Math.floor(Math.random() - 0.5) * 0.3),
+    x: coordinates.x + Math.floor((Math.random() - 0.5) * 0.6),
+    y: coordinates.y + Math.floor((Math.random() - 0.5) * 0.6),
+    z: coordinates.z + Math.abs(Math.floor(Math.random() - 0.5) * 0.6),
   });
 }
 
@@ -57,7 +59,7 @@ function publishUpdates() {
 
       console.log("Published message:");
     }
-  }, 15000);
+  }, 1000);
 }
 
 publishUpdates();

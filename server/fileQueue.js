@@ -1,93 +1,64 @@
-// class fileQueue {
-//   constructor() {
-//     this.Queue = [];
-//     this.headIndex = 0;
-//     this.tailIndex = 0;
-//   }
+import { writeToFile } from "./writeToFile.js";
 
-//   enqueue(item) {
-//     if (item) {
-//       this.Queue[this.tailIndex] = item;
-//       this.tailIndex++;
-//     } else {
-//       throw new Error("Unable to Queue");
-//     }
-//   }
-
-//   dequeue() {
-//     let sendToJson = this.items[this.headIndex];
-//     this.headIndex++;
-//     writeToFunction(sendToJson)
-
-//   }
-
-//   isEmpty() {
-//     if (this.tailIndex - this.headIndex == 0) {
-//       return true;
-//     } else {
-//       return false;
-//     }
-//   }
-
-// }
-
-// export { fileQueue };
-class fileQueue {
+export default class FileQueue {
   constructor() {
-    this.Queue = [];
+    this.items = [];
     this.isRunning = false;
   }
 
-  async start() {
-    setInterval(() => {
-      console.log(this.Queue.length);
+  enqueue(item) {
+    if (item) {
+      this.items.push(item);
+      console.log("queued");
+    } else {
+      throw new Error("Unable to Queue");
+    }
+  }
 
-      if (this.Queue.length > 0) {
-        console.log(this.isRunning);
-        this.isRunning = true;
-        while (this.Queue.length > 0) {
-          console.log("xxxxx");
-          this.execute();
-        }
-        this.isRunning = false;
-      }
-    }, 5000);
+  dequeue() {
+    if (this.isEmpty()) {
+      throw new Error("Queue is empty");
+    }
+    const dequeueItem = this.items.shift();
+    console.log("dequeued", this.items.length);
+    return dequeueItem;
   }
 
   isEmpty() {
-    if (this.Queue.length === 0) {
+    if (this.size() === 0) {
       return true;
     } else {
       return false;
     }
   }
 
-  async enQueue(item) {
-    if (item) {
-      this.Queue.push(item);
-    } else {
-      throw new Error("Unable to Queue");
-    }
+  size() {
+    return this.items.length;
   }
 
-  execute = () => {
-    setTimeout(() => {
-      console.log(this.isEmpty());
-      if (this.isEmpty()) {
-        this.isRunning = false;
-        console.log("is empty");
-        return;
-      }
+  async execute() {
+    console.log("starting execute loop");
+    if (this.isEmpty()) {
+      console.log("Not starting - Empty");
+      return;
+    }
 
-      if (this.isRunning) {
-        console.log("is running");
-        return;
-      }
+    if (this.isRunning) {
+      console.log("Not starting - Already runnning");
+      return;
+    }
 
+    // Process all items in the queue
+    while (!this.isEmpty()) {
+      console.log("Executing");
       this.isRunning = true;
-      const item = this.Queue.shift();
-      writeToFunction(item);
-      console.log("item removed from queue", this.Queue.length);
-    }, 500);
-  };
+      const dequeue = this.dequeue();
+      await writeToFile(dequeue);
+    }
+
+    if (this.isEmpty()) {
+      this.isRunning = false;
+      console.log("finished executing - stopping");
+    }
+  }
 }
